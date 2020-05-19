@@ -12,7 +12,7 @@ public class Routes {
 
     @WebRoute(method = GET, path="/what")
     public static String test1(){
-        return "test10";
+        return "<h1>test 10</h1>".toUpperCase();
     }
 
     @WebRoute(method = POST, path="/")
