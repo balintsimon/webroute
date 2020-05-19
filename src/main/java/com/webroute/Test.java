@@ -2,6 +2,8 @@ package com.webroute;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -20,13 +22,26 @@ public class Test {
     static class MyHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange t) throws IOException {
-            String response = "This is the response";
-            t.sendResponseHeaders(200, response.length());
-            OutputStream os = t.getResponseBody();
-            os.write(response.getBytes());
-            os.close();
+
+            for (Method m : Routes.class.getMethods()) {
+                if(m.isAnnotationPresent(WebRoute.class)) {
+                    Annotation annotation = m.getAnnotation(WebRoute.class);
+                    WebRoute webRoute = (WebRoute) annotation;
+
+                    if (webRoute.path().equals(t.getRequestURI().getPath()) && webRoute.method().toString().equals(t.getRequestMethod().toString())) {
+                        OutputStream os = t.getResponseBody();
+                        String response = m.getName();
+                        t.sendResponseHeaders(200, response.length());
+                        os.write(response.getBytes());
+                        os.close();
+                    } else {
+//                    String response = m.getName();
+                        String response = webRoute.path();
+                        System.out.println(response);
+                    }
+                }
+            }
         }
     }
-
 }
 
