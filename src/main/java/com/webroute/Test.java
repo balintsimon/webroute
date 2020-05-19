@@ -22,20 +22,28 @@ public class Test {
 
     static class MyHandler implements HttpHandler {
         @Override
-        public void handle(HttpExchange t) throws IOException {
+        public void handle(HttpExchange httpExchange) throws IOException {
 
             for (Method m : Routes.class.getMethods()) {
                 if(m.isAnnotationPresent(WebRoute.class)) {
                     Annotation annotation = m.getAnnotation(WebRoute.class);
                     WebRoute webRoute = (WebRoute) annotation;
 
-                    if (webRoute.path().equals(t.getRequestURI().getPath())
-                            && webRoute.method().toString().equals(t.getRequestMethod())) {
-                        OutputStream os = t.getResponseBody();
-                        String response = m.getName();
-                        t.sendResponseHeaders(200, response.length());
+                    if (webRoute.path().equals(httpExchange.getRequestURI().getPath())
+                            && webRoute.method().toString().equals(httpExchange.getRequestMethod())) {
+                        OutputStream os = httpExchange.getResponseBody();
+                        String response = null;
+                        try {
+                            response = m.invoke(null).toString();
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        } catch (InvocationTargetException e) {
+                            e.printStackTrace();
+                        }
+                        httpExchange.sendResponseHeaders(200, response.length());
                         os.write(response.getBytes());
                         os.close();
+
                     }
                 }
             }
