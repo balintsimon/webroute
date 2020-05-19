@@ -15,4 +15,8 @@ public class Routes {
         return "test1";
     }
 
+    @WebRoute(method = POST, path="/")
+    public String test3(){
+        return "test3";
+    }
 }

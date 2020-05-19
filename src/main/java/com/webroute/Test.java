@@ -3,6 +3,7 @@ package com.webroute;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 
@@ -28,16 +29,13 @@ public class Test {
                     Annotation annotation = m.getAnnotation(WebRoute.class);
                     WebRoute webRoute = (WebRoute) annotation;
 
-                    if (webRoute.path().equals(t.getRequestURI().getPath()) && webRoute.method().toString().equals(t.getRequestMethod().toString())) {
+                    if (webRoute.path().equals(t.getRequestURI().getPath())
+                            && webRoute.method().toString().equals(t.getRequestMethod())) {
                         OutputStream os = t.getResponseBody();
                         String response = m.getName();
                         t.sendResponseHeaders(200, response.length());
                         os.write(response.getBytes());
                         os.close();
-                    } else {
-//                    String response = m.getName();
-                        String response = webRoute.path();
-                        System.out.println(response);
                     }
                 }
             }
