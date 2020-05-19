@@ -32,7 +32,7 @@ public class Test {
                     if (webRoute.path().equals(httpExchange.getRequestURI().getPath())
                             && webRoute.method().toString().equals(httpExchange.getRequestMethod())) {
                         OutputStream os = httpExchange.getResponseBody();
-                        String response = null;
+                        String response = m.getName();
                         try {
                             response = m.invoke(null).toString();
                         } catch (IllegalAccessException e) {
